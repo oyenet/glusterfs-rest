@@ -183,3 +183,4 @@ def removebrickCommit(name, brickpath, replica=0):
     cmd += [brickpath, "commit"]
 
     return utils.checkstatuszero(cmd)
+

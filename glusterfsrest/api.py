@@ -9,7 +9,7 @@
 from flask import render_template
 from glusterfsrest.restapp import app, requires_auth, get_post_data
 from glusterfsrest.restapp import run_and_response
-from glusterfsrest.cli import volume, peer
+from glusterfsrest.cli import volume, peer, snapshot
 import yaml
 import os
 
@@ -96,3 +96,31 @@ def peer_create(version, hostname):
 def peer_delete(version, hostname):
     force = get_post_data('force', False)
     return run_and_response(peer.detach, [hostname, force])
+
+@app.route("/api/<float:version>/snapshot/<string:volName>/<string:snapName>", methods=["POST"])
+@requires_auth(['glusterroot', 'glusteradmin'])
+def snapshot_create(version,volName,snapName):
+    description = get_post_data('description', '').lower()
+    force = get_post_data('force', False)
+    start = get_post_data('start', False)
+
+    return run_and_response(snapshot.create, [volName,snapName, description, force, start])
+
+@app.route("/api/<float:version>/snapshot/<string:name>", methods=["GET"])
+@requires_auth(['glusterroot', 'glusteradmin', 'glusteruser'])
+def snapshot_get(version, name):
+    return run_and_response(snapshot.info, [name])
+
+
+@app.route("/api/<float:version>/snapshot/clone/<string:snapName>/<string:cloneName>", methods=["POST"])
+@requires_auth(['glusterroot', 'glusteradmin'])
+def snapshot_clone(version,snapName,cloneName):
+    description = get_post_data('description', '').lower()
+    force = get_post_data('force', False)
+    start = get_post_data('start', False)
+
+    return run_and_response(snapshot.clone, [cloneName,snapName, description, force, start])
+
+
+
+
