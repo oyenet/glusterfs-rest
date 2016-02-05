@@ -64,25 +64,15 @@ def info(name=None):
 
     return data
 
-def activate(name):
+def activate(name, force=False):
     cmd = SNAPSHOT_CMD + ["activate", name]
-
-    return utils.checkstatuszero(cmd)
-
-def start(name, force=False):
-    cmd = SNAPSHOT_CMD + ["start", name]
     if force:
         cmd += ["force"]
 
     return utils.checkstatuszero(cmd)
 
-def deactivate(name):
+def deactivate(name, force=False):
     cmd = SNAPSHOT_CMD + ["deactivate", name]
-
-    return utils.checkstatuszero(cmd)
-
-def stop(name, force=False):
-    cmd = SNAPSHOT_CMD + ["stop", name]
     if force:
         cmd += ["force"]
 
@@ -119,7 +109,10 @@ def create(volName, snapName, description='', force=False,
     return data
 
 
-def delete(name):
+def delete(name, deactivate_snapshot=False):
+    if deactivate_snapshot:
+        deactivate(name, force=True)
+
     cmd = SNAPSHOT_CMD + ["delete", name]
     return utils.checkstatuszero(cmd)
 
@@ -136,7 +129,3 @@ def clone(cloneName, snapName, description='', force=False,start=False):
     if start:
         return volume.start(cloneName)
 
-def restart(name):
-    stop(name, force=True)
-    start(name)
-    return True

@@ -121,6 +121,23 @@ def snapshot_clone(version,snapName,cloneName):
 
     return run_and_response(snapshot.clone, [cloneName,snapName, description, force, start])
 
+@app.route("/api/<float:version>/snapshot/<string:name>", methods=["DELETE"])
+@requires_auth(['glusterroot'])
+def snapshot_delete(version, name):
+    deactivate = get_post_data('deactivate', False)
+    return run_and_response(snapshot.delete, [name, deactivate])
+
+@app.route("/api/<float:version>/snapshot/<string:name>/activate", methods=["PUT"])
+@requires_auth(['glusterroot', 'glusteradmin'])
+def snapshot_activate(version, name):
+    force = get_post_data('force', False)
+    return run_and_response(snapshot.activate, [name, force])
+
+@app.route("/api/<float:version>/snapshot/<string:name>/deactivate", methods=["PUT"])
+@requires_auth(['glusterroot', 'glusteradmin'])
+def snapshot_deactivate(version, name):
+    force = get_post_data('force', False)
+    return run_and_response(snapshot.deactivate, [name, force])
 
 
 
